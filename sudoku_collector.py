@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # This script collects sudoku puzzles from menneske.no
 
+from __future__ import with_statement
 import urllib2
 import re
 import os
@@ -22,8 +23,8 @@ def write_sudoku(sudoku):
     sudoku_rows.insert(3, '')
     sudoku_rows.insert(7, '')
     sudoku_string = '\n'.join(sudoku_rows)
-    with open('sudoku/{category}/{idnr}.sudoku'.format(idnr=sudoku[0], category=sudoku[1]),
-                'w') as file:
+    with open('sudoku/%(category)s/%(idnr)s.sudoku'%{'idnr':sudoku[0],
+		'category':sudoku[1]}, 'w') as file:
 
         file.write(sudoku_string)
 
@@ -66,7 +67,7 @@ def get_four():
 def get_top10():
     html = urllib2.urlopen(top_url).read()
     nrs = [nr[7:] for nr in re.findall('number=[0-9]*', html)]
-    sudokus = [get_number(nr) for nr in nrs]
+    sudokus = [(nr, 'top10', get_number(nr)[2]) for nr in nrs]
 
     return sudokus
 
@@ -78,7 +79,14 @@ def collect_with_getfour(number_of_times):
     
 
 if __name__ == '__main__':
-    collect_with_getfour(sys.argv[1])
-    nr_suds = [len(os.listdir(os.path.join('sudoku',d))) for d in os.listdir('sudoku')]
-    print 'Max: {max}, Tot: {tot}'.format(max=max(nr_suds), tot=sum(nr_suds))
+    #collect_with_getfour(int(sys.argv[1]))
+    #nr_suds = [len(os.listdir(os.path.join('sudoku',d))) for d in os.listdir('sudoku')]
+    #print 'Max: %(max)s, Tot: %(tot)s'%{'max':max(nr_suds), 'tot':sum(nr_suds)}
+
+    print 'impossible'
+    for i in xrange(10):
+        write_sudoku(get_cat(9))
+#    print 'top10'
+#    for sud in get_top10():
+#        write_sudoku(sud)
 
